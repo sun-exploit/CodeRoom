@@ -55,3 +55,15 @@ C'est une excellente illustration du "Principe de Gilb": "Si vous avez besoin de
 # Next
 
 https://macmasterproject.tumblr.com/post/167033351457/how-to-make-a-hologram-video
+
+ffmpeg -i <strFileName>
+       -filter_complex 
+       [0:v]split=4[a][b][c][d]; 
+       [a]rotate=180*(PI/180),pad=iw+2*ih:iw+2*ih:ih:0:black[base];
+       [b]rotate=180*(PI/180),transpose=cclock[br]; 
+       [c]rotate=180*(PI/180),transpose=clock[cr]; 
+       [d]rotate=180*(PI/180),hflip,vflip[dr]; 
+       [base][br]overlay=0:w[two]; 
+       [two][cr]overlay=W-w:w[three]; 
+       [three][dr]overlay=h:H-h[v]
+       -map [v] <formitic>
