@@ -1,0 +1,21 @@
+TOKEN=
+TAG=
+docker run --rm -t -i \
+ -v $(pwd):/etc/gitlab-runner \
+ -v /etc/ssl/certs:/etc/ssl/certs:ro \
+ gitlab/gitlab-runner:latest register \
+   --non-interactive \
+   --executor "docker" \
+   --docker-image docker:stable \
+   --url "https://" \
+   --registration-token "$TOKEN" \
+   --description "Private Runner for my project" \
+   --tag-list "$TAG" \
+   --locked="false" \
+   --docker-privileged
+
+  docker run -d --name gitlab-runner --restart always \
+  -v $(pwd):/etc/gitlab-runner \
+  -v /etc/ssl/certs:/etc/ssl/certs:ro \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  gitlab/gitlab-runner:latest
