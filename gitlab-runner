@@ -19,3 +19,5 @@ docker run --rm -t -i \
   -v /etc/ssl/certs:/etc/ssl/certs:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
   gitlab/gitlab-runner:latest
+
+https://assistance.sfr.fr/internet-tel-fixe/tel-fixe/activer-desactiver-options.html
