@@ -1,0 +1,1 @@
+dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=PARTUUID=089e0a99-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait ip=192.168.100.135
