@@ -1,0 +1,22 @@
+hdmi_force_hotplug=1
+hdmi_ignore_edid=0xa5000080
+config_hdmi_boost=7
+
+#sdtv_aspect=2
+
+#DMT
+hdmi_group=2
+#1280x720       60Hz    720p
+hdmi_mode=85
+
+disable_overscan=0
+overscan_left=16
+overscan_right=16
+overscan_top=16
+overscan_bottom=16
+
+hdmi_drive=1
+framebuffer_width=1280
+framebuffer_height=720
+
+dtparam=audio=on
