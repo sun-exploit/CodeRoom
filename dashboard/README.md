@@ -1,3 +1,4 @@
+```
 # Turn off HDMI & Composite output: /opt/vc/bin/tvservice -o
 40 8 * * 1-5 /opt/vc/bin/tvservice -p && /home/pi/start_dashboard.sh
 30 19 * * 1-5 killall xinit && /opt/vc/bin/tvservice -p
@@ -41,3 +42,7 @@ sleep 10
 xdotool key ctrl+Tab
 done
 
+chvt 6
+chvt 7
+
+```
