@@ -51,4 +51,12 @@ chvt 7
 30 9 * * 1-5 DISPLAY=:0 /usr/bin/timeout 20 /usr/bin/omxplayer --no-keys -o local `/usr/local/bin/youtube-dl -f mp4 -g https://www.youtube.com/watch?v=dXPLhE_z57M`
 
 
+# Other
+To turn off monitor in console, the command is the following:
+sudo vbetool dpms off
+To regain control of the console on pressing Enter key, I suggest
+sudo sh -c 'vbetool dpms off; read ans; vbetool dpms on'
+
+
+
 ```
