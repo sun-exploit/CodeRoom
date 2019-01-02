@@ -6,3 +6,23 @@ https://www.alexkras.com/19-git-tips-for-everyday-use/
 https://www3.ntu.edu.sg/home/ehchua/programming/howto/Cygwin_HowTo.html
 
 https://paraschetal.in/writing-your-own-shellcode
+
+
+For anyone else still struggling with this here's the steps to install make in cygwin :
+    Run the cygwin installer from the downloads.
+    After choosing the mirror you are shown the packages you can install.
+    choose the Devel package (click on it it will turn from "Default" to "Install".
+    when the installation is finish run the cmd and command "bash" and check if make installed run "make -v". And you are done.
+hope it's helpful.
+
+https://stackoverflow.com/questions/2952733/using-sys-socket-h-functions-on-windows
+You have two options:
+    Use Cygwin (Unix emulation library).
+    Port to Winsock (Windows standard library).
+The first option allows you to compile your Unix sources mostly untouched, but ties you to the Cygwin emulation library (which implies two things at runtime: general performance -no only network- will probably be less than optimal; and the running environment must have the Cygwin DLL available). The second alternative requires you to replace sys/socket.h (BSD sockets library, UNIX standard for the TCP/IP stack) with winsock2.h, and rewrite some parts of the code -not much, but some.
+Some related questions with valuable info:
+Differences between winsock and BSD socket implementations
+Some Issues About Cygwin[Linux in Windows] (socket,thread,other programming and shell issues)
+Examples for Winsock?
+
+http://www.cygwin.com/cygwin-ug-net/programming.html#gcc-default
