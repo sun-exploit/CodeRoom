@@ -105,6 +105,6 @@ Install files? y
 echo "H4sIABlNiVwAA/NIzcnJVyjPL8pJ4QIA1eA5twwAAAA=" | base64 -d | gunzip
 ```
 
-
+sed -e '1,/PAYLOAD:/!d' install.sh
 
 
