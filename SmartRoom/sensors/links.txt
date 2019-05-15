@@ -1,0 +1,6 @@
+https://electroniqueamateur.blogspot.com/2018/02/communication-rf-433-mhz-entre-attiny85.html
+http://tiptopboards.com/96-module-de-transmission-radiofr%C3%A9quence-433-mhz-%C3%A9metteur-et-r%C3%A9cepteur.html
+http://blog.onlinux.fr/detecteur-de-choc-tx-433mhz-pilotes-avec-attiny85/
+https://forum.arduino.cc/index.php?topic=604964.0
+https://gist.github.com/ypelletier
+
