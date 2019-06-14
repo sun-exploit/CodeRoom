@@ -9,3 +9,7 @@ http://www.mindsensors.com/content/33-pi-pan-readme#preinstalled-images
 https://medium.com/@rovai/raspberry-pi-cam-pan-tilt-controlled-over-local-internet-49ecad3a5ee8
 * Fichiers sur le Rpi de démo
 Voir le fichier _home_pi.tgz dans ce rep.
+* Pour lancer le serveur http:
+```
+sudo python3 ./server.py
+```
