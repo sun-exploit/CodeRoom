@@ -15,3 +15,7 @@ To set read_ahead to a higher value, execute the following command:
 ```
 
 Typically, customized read_ahead settings are used on Ceph clients that use RBD. You should change read_ahead for all the RBDs mapped to this host; also make sure to use the correct device path name.
+
+Notes:
+
+This short demo shows how to use a 0.96 inch OLED from Balance world Inc. This Yellow and Blue unit is on the I2C Serial buss and works with Arduino UNO, or Mega boards. Shown are voltage measurements and a performance test using a small bar graph.
