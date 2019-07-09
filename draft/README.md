@@ -45,3 +45,5 @@ void loop()
   }
 }
 ```
+* Attiny85
+https://www.instructables.com/id/Arduino-Nano-as-Attiny-85-programmer-and-5-LED-POV/
