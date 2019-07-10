@@ -49,3 +49,21 @@ void loop()
 
 https://www.instructables.com/id/Arduino-Nano-as-Attiny-85-programmer-and-5-LED-POV/
 https://www.youtube.com/watch?v=MirP8WvzXuA
+
+
+Once the clock on the Attiny has been set to ‘external’ without the presence of an external clock, Arduino will produce the following error on the next attempt to burn a bootloader:
+
+```
+    avrdude: Yikes! Invalid device signature.
+    Double check connections and try again, or use -F to override this check.
+    Error while burning bootloader.
+```
+
+Fixing this should be as simple as fitting a crystal oscillator between the pins 2 and 3 of the Arduino in any orientation (a crystal oscillator does not have a polarity). The frequency of the crystal oscillator should not matter, although I did it with a 16Mhz oscillator. Note that the crystal oscillator needs to be fitted to the physical pins 2&3 (the digital pins in blue and the analog pins in red have a somewhat confusing naming convention on the Attiny).
+
+Now, all that’s left to do is to select the correct ‘internal’ clock (e.g 8Mhz) and click ‘Burn Bootloader’ in Arduino. Once Arduino is done with this, the crystal can be removed again.
+
+Note: Two 22pf capacitors can be fitted between both ends of the oscillator and ground, but this should not be necessary for a quick fix.
+
+
+
