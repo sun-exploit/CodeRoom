@@ -48,7 +48,10 @@ void loop()
 * Attiny85
 
 https://www.instructables.com/id/Arduino-Nano-as-Attiny-85-programmer-and-5-LED-POV/
+
 https://www.youtube.com/watch?v=MirP8WvzXuA
+
+https://medium.com/jungletronics/attiny85-easy-flashing-through-arduino-b5f896c48189
 
 
 Once the clock on the Attiny has been set to ‘external’ without the presence of an external clock, Arduino will produce the following error on the next attempt to burn a bootloader:
