@@ -68,5 +68,7 @@ Now, all that’s left to do is to select the correct ‘internal’ clock (e.g 
 
 Note: Two 22pf capacitors can be fitted between both ends of the oscillator and ground, but this should not be necessary for a quick fix.
 
+* Yann
+https://fr.aliexpress.com/item/32841661690.html
 
 
