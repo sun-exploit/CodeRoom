@@ -72,3 +72,5 @@ Note: Two 22pf capacitors can be fitted between both ends of the oscillator and 
 https://fr.aliexpress.com/item/32841661690.html
 https://github.com/tehniq3/WS2801-led-strip/blob/master/ws2801_3leds_2m4a.ino
 
+* USB Connector A Type
+https://www.cytron.io/p-breakout-usb-a-type-male
