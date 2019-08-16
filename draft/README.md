@@ -74,3 +74,14 @@ https://github.com/tehniq3/WS2801-led-strip/blob/master/ws2801_3leds_2m4a.ino
 
 * USB Connector A Type
 https://www.cytron.io/p-breakout-usb-a-type-male
+
+NodeJS:
+
+```
+var fs = require("fs");
+
+fs.readFile("test.txt", function (err, data) {
+    if (err) throw err;
+    console.log(data.toString());
+});
+```
