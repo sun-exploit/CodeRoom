@@ -85,3 +85,6 @@ fs.readFile("test.txt", function (err, data) {
     console.log(data.toString());
 });
 ```
+
+* SystemD
+https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units
