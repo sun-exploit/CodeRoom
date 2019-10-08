@@ -50,10 +50,14 @@ void setup(void) {
 
   // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
+    delay(5000);
     boolean current = digitalRead(SensorPin);
-    Serial.print(" ");
+    Serial.print("\n");
     Serial.print(current);
+    Serial.println("\n"); 
+    Serial.print("Reason startup :");Serial.println(ESP.getResetReason());delay(5000);
+    Serial.println("Go to deep sleep");
+    ESP.deepSleep(0);
   }
   Serial.println("");
   Serial.print("Connected to ");
