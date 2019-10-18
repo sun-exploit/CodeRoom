@@ -88,3 +88,6 @@ fs.readFile("test.txt", function (err, data) {
 
 * SystemD
 https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units
+
+* Moisture sensor
+https://randomnerdtutorials.com/guide-for-soil-moisture-sensor-yl-69-or-hl-69-with-the-arduino/
