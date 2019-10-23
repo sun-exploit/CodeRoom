@@ -37,7 +37,7 @@ const int report_server_port = REPORTSERVERPORT;
 const int idx = 37;
  
 const int SensorPin = 12;
-const unsigned sleepTime = 5 * 60;
+const unsigned sleepTime = 10 * 60;
 const int drySensorState = HIGH;
 const int wetWaterSensorState = LOW;
 int currentSensorState = HIGH;
@@ -45,7 +45,10 @@ boolean wetDetected = false;
 boolean forceSendStatus = false;
 
 void setup(void) {
-
+  WiFi.mode( WIFI_OFF );
+  WiFi.forceSleepBegin();
+  delay( 1 );
+  
   Serial.begin(115200);
   Serial.println();
   Serial.println("Start");
@@ -65,7 +68,7 @@ void setup(void) {
       system_rtc_mem_read(rtcPos, &rtcMemr, sizeof(rtcMemr));
       rtcMem.battery = i;
       //rtcMem.other = i * 11;
-      if ( rtcMemr.other > 143 ) {
+      if ( rtcMemr.other > ( 43200 / sleepTime ) {
         rtcMem.other = 0;
         forceSendStatus = true;
       } else {
@@ -132,16 +135,31 @@ void setup(void) {
       sendSensorState(drySensorState);
     } 
   }
-  // dryWaterSensorState
-  WiFi.disconnect();    
   Serial.println("So far, so good...");
   Serial.println("before sleep");
-  ESP.deepSleep(sleepTime * 1000000, WAKE_RFCAL);
+  WiFi.disconnect( true );
+  delay( 1 );
+  WiFi.mode( WIFI_OFF );
+  WiFi.forceSleepBegin();
+  delay( 5 );
+  // WAKE_RF_DISABLED to keep the WiFi radio disabled when we wake up
+  ESP.deepSleep(sleepTime * 1000000, WAKE_RF_DISABLED );
 }
 
 boolean wifiConnect(void) {
-
-  WiFi.mode(WIFI_STA);
+  
+  WiFi.forceSleepWake();
+  delay( 1 );
+  // Disable the WiFi persistence.  The ESP8266 will not load and save WiFi settings in the flash memory.
+  WiFi.persistent( false );
+  
+  //IPAddress ip( 192, 168, 0, 1 );
+  //IPAddress gateway( 192, 168, 0, 254 );
+  //IPAddress subnet( 255, 255, 255, 0 );
+  //WiFi.config( ip, gateway, subnet );
+  //WiFi.begin( WLAN_SSID, WLAN_PASSWD );
+  // Bring up the WiFi connection
+  WiFi.mode( WIFI_STA );
   WiFi.begin(ssid, password);
   Serial.println("");
   int attempt = 0;
