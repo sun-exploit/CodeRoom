@@ -68,6 +68,170 @@ void setup(void) {
       system_rtc_mem_read(rtcPos, &rtcMemr, sizeof(rtcMemr));
       rtcMem.battery = i;
       //rtcMem.other = i * 11;
+      if ( rtcMemr.other > ( 43200 / sleepTime ) ) {
+        rtcMem.other = 0;
+        forceSendStatus = true;
+      } else {
+        rtcMem.other = rtcMemr.other + 1;
+      }
+      
+      system_rtc_mem_write(rtcPos, &rtcMem, buckets * 4);
+      toggleFlag = false;
+      system_rtc_mem_write(64, &toggleFlag, 4);
+
+      Serial.print("i: ");
+      Serial.print(i);
+      Serial.print(" Position: ");
+      Serial.print(rtcPos);
+      Serial.print(", battery: ");
+      Serial.print(rtcMem.battery);
+      Serial.print(", other: ");
+      Serial.println(rtcMem.other);
+      yield();
+    }
+    Serial.println("Writing done");
+  }
+  else {
+    Serial.println("Start reading");
+    for (i = 0; i < RTCMEMORYLEN / buckets; i++) {
+      int rtcPos = RTCMEMORYSTART + i * buckets;
+      system_rtc_mem_read(rtcPos, &rtcMem, sizeof(rtcMem));
+      toggleFlag = true;
+      system_rtc_mem_write(64, &toggleFlag, 4);
+
+      Serial.print("i: ");
+      Serial.print(i);
+      Serial.print(" Position ");
+      Serial.print(rtcPos);
+      Serial.print(", battery: ");
+      Serial.print(rtcMem.battery);
+      Serial.print(", other: ");
+      Serial.println(rtcMem.other);
+      yield();
+    }
+    Serial.println("reading done");
+    /*
+    for (i = 0; i < RTCMEMORYLEN / buckets; i++) {
+      rtcMem.battery = 0;
+      rtcMem.other = 0;
+      int rtcPos = RTCMEMORYSTART + i * buckets;
+      system_rtc_mem_write(rtcPos, &rtcMem, buckets * 4);
+    }
+    */
+  }
+
+  pinMode(SensorPin, INPUT);
+  Serial.print("Current Sensor State ");
+  
+  while ( digitalRead(SensorPin) == wetWaterSensorState ) {
+    wetDetected = true;
+    Serial.println(wetWaterSensorState);
+    if ( wifiConnect() ) {
+      sendSensorState(wetWaterSensorState);
+    }
+  }
+  if ( wetDetected || forceSendStatus ) {
+      if ( wifiConnect() ) {
+      sendSensorState(drySensorState);
+    } 
+  }
+  Serial.println("So far, so good...");
+  Serial.println("before sleep");
+  WiFi.disconnect( true );
+  delay( 1 );
+  WiFi.mode( WIFI_OFF );
+  WiFi.forceSleepBegin();
+  delay( 5 );
+  // WAKE_RF_DISABLED to keep the WiFi radio disabled when we wake up
+  ESP.deepSleep(sleepTime * 1000000, WAKE_RF_DISABLED );
+}
+
+boolean wifiConnect(void) {
+  
+  WiFi.forceSleepWake();
+  delay( 1 );
+  // Disable the WiFi persistence.  The ESP8266 will not load and save WiFi settings in the flash memory.
+  WiFi.persistent( false );
+  
+  //IPAddress ip( 192, 168, 0, 1 );
+  //IPAddress gateway( 192, 168, 0, 254 );
+  //IPAddress subnet( 255, 255, 255, 0 );
+  //WiFi.config( ip, gateway, subnet );
+  //WiFi.begin( WLAN_SSID, WLAN_PASSWD );
+  // Bring up the WiFi connection
+  WiFi.mode( WIFI_STA );
+  WiFi.begin(ssid, password);
+  Serial.println("");
+  int attempt = 0;
+  int max_attempt = 50;
+  
+  while (attempt < max_attempt && WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    attempt++;
+    Serial.print(".");
+  }
+  
+  if ( attempt == max_attempt ) {
+    Serial.println("");
+    Serial.print("Failed to connected to ");
+    Serial.println(ssid);
+    return false;
+  }
+  
+  Serial.println("");
+  Serial.print("Connected to ");
+  Serial.println(ssid);
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+  return true;
+}
+
+void sendSensorState(int state) {
+  
+  if (client.connect(report_server,report_server_port)) {
+    Serial.println("Sending Values to server...:");
+    client.print("GET /json.htm?type=command&param=udevice&idx=");
+    client.print(idx);
+    client.print("&nvalue=");
+    client.print(state);
+    client.println(" HTTP/1.1");
+    client.print("Host: ");
+    client.print(report_server);
+    client.print(":");
+    client.println(report_server_port);
+    client.println("User-Agent: Arduino-ethernet");
+    client.println("Connection: close");
+    client.println();
+    client.stop();
+    Serial.println(state);
+  } else {
+    Serial.println("Can not connect to server...:");
+    Serial.println(report_server);
+  }
+}
+
+void loop(void) {}
+
+  
+  Serial.begin(115200);
+  Serial.println();
+  Serial.println("Start");
+
+  buckets = (sizeof(rtcMem) / 4);
+  if (buckets == 0) buckets = 1;
+  Serial.print("Buckets ");
+  Serial.println(buckets);
+  system_rtc_mem_read(64, &toggleFlag, 4);
+  Serial.print("toggle Flag ");
+  Serial.println(toggleFlag);
+
+  if (toggleFlag) {
+    Serial.println("Start Writing");
+    for (i = 0; i < RTCMEMORYLEN / buckets; i++) {
+      int rtcPos = RTCMEMORYSTART + i * buckets;
+      system_rtc_mem_read(rtcPos, &rtcMemr, sizeof(rtcMemr));
+      rtcMem.battery = i;
+      //rtcMem.other = i * 11;
       if ( rtcMemr.other > ( 43200 / sleepTime ) {
         rtcMem.other = 0;
         forceSendStatus = true;
