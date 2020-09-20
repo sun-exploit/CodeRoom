@@ -1,5 +1,16 @@
-https://github.com/njh/EtherCard/tree/master/examples
+* TIC
+
 http://miniprojets.net/index.php/2019/06/28/recuperer-les-donnees-de-son-compteur-linky/
+
+* ENC28J60 Ethernet Controller
+
+https://t04glovern.github.io/2015/12/arduino-projects-ethernet-using-enc28j60
+
+https://github.com/njh/EtherCard/tree/master/examples
+
+* HC-11
+
+https://www.elecfreaks.com/blog/post/cc1101-433mhz-wireless-rf-transceiver-module-v1-9-user-guide.html
 
 MOSFET 2N7000
 
