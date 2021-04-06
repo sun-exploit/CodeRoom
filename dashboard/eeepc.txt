@@ -5,7 +5,11 @@ mplayer -fs -vo vdpau -x 800 -y 480 -cache 8192 http://192.168.2.2:8085
 
 apt-get install xfonts-base xserver-xorg-input-all xinit xserver-xorg-video-intel
 
+Edit (or create) the file /etc/X11/Xwrapper.config with the following content:
+allowed_users=anybody
+needs_root_rights=yes
 
+$ startx -- vt1
 ############################################################################################################################
 
 #
