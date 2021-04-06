@@ -1,6 +1,12 @@
 cvlc --avcodec-hw=h264 dvb://frequency=506000000 --programs=1031 --sout '#transcode{vcodec=h264,ab=96,width=480,height=270}:standard{access=http,mux=ts,dst=192.168.2.2:8085,select="program=1031}'
 mplayer -fs -vo vdpau -x 800 -y 480 -cache 8192 http://192.168.2.2:8085
 
+############################################################################################################################
+
+apt-get install xfonts-base xserver-xorg-input-all xinit xserver-xorg-video-intel
+
+
+############################################################################################################################
 
 #
 # In order to enable or disable this script just change the execution
