@@ -1,2 +1,27 @@
 cvlc --avcodec-hw=h264 dvb://frequency=506000000 --programs=1031 --sout '#transcode{vcodec=h264,ab=96,width=480,height=270}:standard{access=http,mux=ts,dst=192.168.2.2:8085,select="program=1031}'
 mplayer -fs -vo vdpau -x 800 -y 480 -cache 8192 http://192.168.2.2:8085
+
+
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+# By CJ
+/sbin/ethtool -s enp3s0 wol g
+#/usr/sbin/vbetool dpms off
+echo deadline > /sys/block/sda/queue/scheduler
+echo deadline > /sys/block/sdb/queue/scheduler
+echo 1 > /sys/block/sda/queue/iosched/fifo_batch
+#echo 1 > /sys/block/sdb/queue/iosched/fifo_batch
+echo 64 > /sys/block/sdb/device/max_sectors
+# Economize the SSD
+sysctl -w vm.swappiness=1 # Strongly discourage swapping
+sysctl -w vm.vfs_cache_pressure=50 # Don't shrink the inode cache aggressively
+# As in the rc.last.ctrl of Linpus
+echo 1500 > /proc/sys/vm/dirty_writeback_centisecs
+echo 20 > /proc/sys/vm/dirty_ratio
+echo 10 > /proc/sys/vm/dirty_background_ratio
+#sleep 60
+#/usr/sbin/vbetool dpms off
+exit 0
