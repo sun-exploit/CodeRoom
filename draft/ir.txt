@@ -1,0 +1,10 @@
+https://tasmota.github.io/docs/devices/YTF-IR-Bridge/
+https://tasmota.github.io/docs/IRSend-RAW-Encoding/
+https://github.com/arendst/Tasmota/issues/4855
+https://tasmota.github.io/docs/Commands/#ir-remote
+https://tasmota.github.io/docs/Getting-Started/
+https://gitmemory.com/issue/arendst/Tasmota/5377/775677712
+https://github.com/xoseperez/espurna/issues/1729
+https://tasmota.github.io/docs/Getting-Started/
+https://blog.castnet.club/en/blog/flashing-tasmota-on-tuya-ir-bridge/
+https://tasmota.github.io/docs/devices/TYWE3S/
