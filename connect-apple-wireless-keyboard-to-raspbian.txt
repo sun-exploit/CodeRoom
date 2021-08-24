@@ -1,0 +1,51 @@
+
+pi@raspberrypi:~ $ sudo bluetoothctl
+[NEW] Controller B8:27:EB:FF:FF:FF raspberrypi [default]
+[NEW] Device C8:E0:EB:FF:FF:FF Apple Wireless Keyboard
+[bluetooth]# agent on
+Agent registered
+[bluetooth]# default-agent
+Default agent request successful
+[bluetooth]# pairable on
+Changing pairable on succeeded
+[bluetooth]# pair C8:E0:EB:FF:FF:FF
+Attempting to pair with C8:E0:EB:FF:FF:FF
+Failed to pair: org.bluez.Error.ConnectionAttemptFailed
+
+NOTE: Keyboard was off in not in pairing mode. This is where I press and held the power button
+
+[bluetooth]# pair C8:E0:EB:FF:FF:FF
+Attempting to pair with C8:E0:EB:FF:FF:FF
+[CHG] Device C8:E0:EB:FF:FF:FF Connected: yes
+[agent] PIN code: 599276
+
+NOTE: I pressed the six digits on the Apple Wireless Keyboard followed by <return> and then it paired.
+
+[CHG] Device C8:E0:EB:FF:FF:FF Paired: yes
+Pairing successful
+[CHG] Device C8:E0:EB:FF:FF:FF Connected: no
+[bluetooth]# connect C8:E0:EB:FF:FF:FF
+Attempting to connect to C8:E0:EB:FF:FF:FF
+[CHG] Device C8:E0:EB:FF:FF:FF Connected: yes
+Connection successful
+[bluetooth]# quit
+Agent unregistered
+[DEL] Controller B8:27:EB:FF:FF:FF raspberrypi [default]
+
+NOTE: Did not work until a reboot
+
+Etape 2 : Changer le layout par defaut
+
+N’etant pas suffisant, car je voulais que même sous les autres users cette manipulation soit appliquée, il a fallu modifier le layout par defaut.
+
+    pi@raspberrypi : ~ $ sudo nano /etc/default/keyboard
+
+    # KEYBOARD CONFIGURATION FILE
+    # Consult the keyboard(5) manual page.
+    XKBMODEL="pc105"
+    XKBLAYOUT="ch"
+    XKBVARIANT="mac"
+    XKBOPTIONS="lv3:switch,compose:lwin"
+    BACKSPACE="guess"
+
+    ATTENTION : j’ai un clavier Suisse Français, donc modifiez la valeur XKBLAYOUT= »CH » par XKBLAYOUT= »FR »
