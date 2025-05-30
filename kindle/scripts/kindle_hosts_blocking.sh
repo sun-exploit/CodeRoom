@@ -1,70 +1,73 @@
-<!DOCTYPE html>
+#!/bin/sh
+# SPDX-FileCopyrightText: 2021 Sotiris Papatheodorou
+# SPDX-License-Identifier: CC0-1.0
+#
+# Usage: kindle_hosts_blocking.sh [KINDLE_IP]
+# KINDLE_IP defaults to 192.168.15.244 (the IP used by the Kindle 4 non-touch).
 
-<html>
-<head>
-    <title>Checking you are not a bot</title>
-    <link rel="stylesheet" href="/.well-known/.git.gammaspectra.live/git/go-away/cmd/go-away/assets/static/anubis/style.css?cacheBust=ZoAb7RPdpFIHlG9X7b8WwA"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="referrer" content="origin"/>
-    
-    <meta content="0; url=/.well-known/.git.gammaspectra.live/git/go-away/cmd/go-away/challenge/meta-refresh/verify-challenge?__goaway_challenge=meta-refresh&amp;__goaway_id=fb9fbd8b98877017b689fb4506c06380&amp;__goaway_redirect=%2F~sotirisp%2Fkindle-hacks%2Fblob%2Fmaster%2Fscripts%2Fkindle_hosts_blocking.sh%3F__goaway_challenge%3Dmeta-refresh%26__goaway_id%3Dfb9fbd8b98877017b689fb4506c06380&amp;__goaway_token=01030b1b2246c981c3adeac616afa5a604888b0f41b06507bc637d75ea21c626" http-equiv="refresh" />
-    
-    
-    
-</head>
-<body id="top">
-<main>
-    <center>
-        <h1 id="title" class=".centered-div">Checking you are not a bot</h1>
-    </center>
+set -eu
 
-    <div class="centered-div">
-        <img
-                id="image"
-                style="width:100%;max-width:256px;"
-                src="/.well-known/.git.gammaspectra.live/git/go-away/cmd/go-away/assets/static/logo.png?cacheBust=ZoAb7RPdpFIHlG9X7b8WwA"
-        />
-        
-        <p id="status">Loading challenge <em>meta-refresh</em>...</p>
-        
-        <details>
-            <summary>Why am I seeing this?</summary>
+if [ "$#" -eq 0 ]; then
+	kindle_ip='192.168.15.244'
+else
+	kindle_ip="$1"
+fi
 
-            
-<p>
-	You are seeing this because the administrator of this website has set up <a href="https://git.gammaspectra.live/git/go-away">go-away</a> 
-	to protect the server against the scourge of <a href="https://thelibre.news/foss-infrastructure-is-under-attack-by-ai-companies/">AI companies aggressively scraping websites</a>.
-</p>
-<p>
-	Mass scraping can and does cause downtime for the websites, which makes their resources inaccessible for everyone.
-</p>
-<p>
-	Please note that some challenges requires the use of modern JavaScript features and some plugins may disable these.
-	Disable such plugins for this domain (for example, JShelter) if you encounter any issues.
-</p>
+if ! ssh -T -o ConnectTimeout=2 -i ~/.ssh/kindle.key root@"$kindle_ip" ls > /dev/null 2>&1; then
+	printf 'Error: The Kindle must be connected and USB networking must be enabled\n'
+	exit 1
+fi
 
-        </details>
+# Generate the setup script
+setup_script=${TMPDIR:-/tmp}/kindle_setup.sh
+cat << 'EOF' > "$setup_script"
+#!/bin/sh
+set -eu
+/usr/sbin/mntroot rw > /dev/null 2>&1
+# Backup the hosts file
+cp /etc/hosts /mnt/us/backup/hosts
+# Modify the hosts file
+cat << 'FEO' >> /etc/hosts
+127.0.0.1 amazon.ca
+127.0.0.1 amazon.cn
+127.0.0.1 amazon.co.jp
+127.0.0.1 amazon.com
+127.0.0.1 amazon.com.au
+127.0.0.1 amazon.com.br
+127.0.0.1 amazon.com.mx
+127.0.0.1 amazon.co.uk
+127.0.0.1 amazon.de
+127.0.0.1 amazon.es
+127.0.0.1 amazon.eu
+127.0.0.1 amazon.fr
+127.0.0.1 amazon.in
+127.0.0.1 amazon.it
+127.0.0.1 amazon.ru
+127.0.0.1 cde-g7g.amazon.com
+127.0.0.1 det-g7g.amazon.com
+127.0.0.1 det-ta-g7g.amazon.com
+127.0.0.1 device-messaging-na.amazon.com
+127.0.0.1 fints-g7g.amazon.com
+127.0.0.1 firs-g7g.amazon.com
+127.0.0.1 firs-ta-g7g.amazon.com
+127.0.0.1 fras-g7g.amazon.com
+127.0.0.1 images-amazon.com
+127.0.0.1 kdk-ws.amazon.com
+127.0.0.1 kindle.amazon.com
+127.0.0.1 kindleatt1.amazon.com
+127.0.0.1 kindle-time.amazon.com
+127.0.0.1 ntp-g7g.amazon.com
+127.0.0.1 todo-g7g.amazon.com
+127.0.0.1 w.amazon.com
+127.0.0.1 www.amazon.com 
+FEO
+EOF
 
-        
+# rsync it to the Kindle
+rsync --rsh "ssh -i ~/.ssh/kindle.key" "$setup_script" root@"$kindle_ip":~/ > /dev/null 2>&1
 
-        
+# Run the script and then delete it
+ssh -i ~/.ssh/kindle.key root@"$kindle_ip" 'sh ~/kindle_setup.sh && rm ~/kindle_setup.sh'
 
-        <p><small>If you have any issues contact the site administrator and provide the following Request Id: <em>fb9fbd8b98877017b689fb4506c06380</em></small></p>
-    </div>
-
-
-    <footer>
-        <center>
-            <p>
-                Protected by <a href="https://git.gammaspectra.live/git/go-away">go-away</a> :: Request Id <em>fb9fbd8b98877017b689fb4506c06380</em>
-
-                
-            </p>
-        </center>
-    </footer>
-
-
-    
-</main>
-</body>
-</html>
+printf 'Host blocking finished\n'
+  

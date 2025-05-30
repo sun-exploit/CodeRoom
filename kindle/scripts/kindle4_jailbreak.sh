@@ -1,70 +1,43 @@
-<!DOCTYPE html>
+#!/bin/sh
+# SPDX-FileCopyrightText: 2021 Sotiris Papatheodorou
+# SPDX-License-Identifier: CC0-1.0
+# Usage: kindle4_jailbreak.sh KINDLE_ROOT_DIR
+set -eu
 
-<html>
-<head>
-    <title>Checking you are not a bot</title>
-    <link rel="stylesheet" href="/.well-known/.git.gammaspectra.live/git/go-away/cmd/go-away/assets/static/anubis/style.css?cacheBust=ZoAb7RPdpFIHlG9X7b8WwA"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="referrer" content="origin"/>
-    
-    <meta content="0; url=/.well-known/.git.gammaspectra.live/git/go-away/cmd/go-away/challenge/meta-refresh/verify-challenge?__goaway_challenge=meta-refresh&amp;__goaway_id=231cc94b69dbe58d77c125d6a25730c3&amp;__goaway_redirect=%2F~sotirisp%2Fkindle-hacks%2Fblob%2Fmaster%2Fscripts%2Fkindle4_jailbreak.sh%3F__goaway_challenge%3Dmeta-refresh%26__goaway_id%3D231cc94b69dbe58d77c125d6a25730c3&amp;__goaway_token=01030b1b2246c981c3adeac616afa5a604888b0f41b06507bc637d75ea21c626" http-equiv="refresh" />
-    
-    
-    
-</head>
-<body id="top">
-<main>
-    <center>
-        <h1 id="title" class=".centered-div">Checking you are not a bot</h1>
-    </center>
+if [ "$#" -ne 1 ] || [ ! -d "$1" ]; then
+	printf 'Usage: %s KINDLE_ROOT_DIR\n' "$(basename "$0")"
+	exit 2
+fi
 
-    <div class="centered-div">
-        <img
-                id="image"
-                style="width:100%;max-width:256px;"
-                src="/.well-known/.git.gammaspectra.live/git/go-away/cmd/go-away/assets/static/logo.png?cacheBust=ZoAb7RPdpFIHlG9X7b8WwA"
-        />
-        
-        <p id="status">Loading challenge <em>meta-refresh</em>...</p>
-        
-        <details>
-            <summary>Why am I seeing this?</summary>
+# Extract the jailbreak ZIP file
+script_dir=$(dirname "$(readlink -f "$0")")
+archive_dir="$script_dir/../archives"
+unzip_dir=${TMPDIR:-/tmp}/kindle4_unzip
+mkdir -p "$unzip_dir"
+unzip -d "$unzip_dir" "$archive_dir/kindle-k4-jailbreak-1.8.N.zip" > /dev/null
 
-            
-<p>
-	You are seeing this because the administrator of this website has set up <a href="https://git.gammaspectra.live/git/go-away">go-away</a> 
-	to protect the server against the scourge of <a href="https://thelibre.news/foss-infrastructure-is-under-attack-by-ai-companies/">AI companies aggressively scraping websites</a>.
-</p>
-<p>
-	Mass scraping can and does cause downtime for the websites, which makes their resources inaccessible for everyone.
-</p>
-<p>
-	Please note that some challenges requires the use of modern JavaScript features and some plugins may disable these.
-	Disable such plugins for this domain (for example, JShelter) if you encounter any issues.
-</p>
+# Copy the jailbreak files to the Kindle
+kindle_dir="$1"
+cp "$unzip_dir/data.tar.gz" "$kindle_dir/"
+cp "$unzip_dir/ENABLE_DIAGS" "$kindle_dir/"
+cp -R "$unzip_dir/diagnostic_logs" "$kindle_dir/"
 
-        </details>
+printf 'Jailbreak files copied into\n    %s\n' "$kindle_dir"
+printf '* Unmount and disconnect the Kindle.\n'
+printf '* Put it in Airplane Mode to prevent it from connecting to the \n'
+printf '  Internet. Amazon will undo the jailbreak, USB networking and fake\n'
+printf '  registration if this happens. Keep the WiFi disabled for the \n'
+printf '  duration of the setup using\n'
+printf '      ≡ Button -> Settings -> Airplane Mode\n'
+printf '* Restart the Kindle using\n'
+printf '      ≡ Button -> Settings -> ≡ Button -> Restart\n'
+printf '* Once it restarts in diagnostic mode select:\n'
+printf '      D) Exit, Reboot or Disable Diags\n'
+printf '      R) Reboot System\n'
+printf '      Q) To continue\n'
+printf '* Once it restarts in normal mode you should see a document titled\n'
+printf '      You are Jailbroken\n'
 
-        
+# Clean up
+rm -rf "$unzip_dir"
 
-        
-
-        <p><small>If you have any issues contact the site administrator and provide the following Request Id: <em>231cc94b69dbe58d77c125d6a25730c3</em></small></p>
-    </div>
-
-
-    <footer>
-        <center>
-            <p>
-                Protected by <a href="https://git.gammaspectra.live/git/go-away">go-away</a> :: Request Id <em>231cc94b69dbe58d77c125d6a25730c3</em>
-
-                
-            </p>
-        </center>
-    </footer>
-
-
-    
-</main>
-</body>
-</html>

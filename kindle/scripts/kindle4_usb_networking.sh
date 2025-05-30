@@ -1,70 +1,70 @@
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title>Checking you are not a bot</title>
-    <link rel="stylesheet" href="/.well-known/.git.gammaspectra.live/git/go-away/cmd/go-away/assets/static/anubis/style.css?cacheBust=ZoAb7RPdpFIHlG9X7b8WwA"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="referrer" content="origin"/>
-    
-    <meta content="0; url=/.well-known/.git.gammaspectra.live/git/go-away/cmd/go-away/challenge/meta-refresh/verify-challenge?__goaway_challenge=meta-refresh&amp;__goaway_id=b9d42116ff1c17c335d59818c92bef4b&amp;__goaway_redirect=%2F~sotirisp%2Fkindle-hacks%2Fblob%2Fmaster%2Fscripts%2Fkindle4_usb_networking.sh%3F__goaway_challenge%3Dmeta-refresh%26__goaway_id%3Db9d42116ff1c17c335d59818c92bef4b&amp;__goaway_token=01030b1b2246c981c3adeac616afa5a604888b0f41b06507bc637d75ea21c626" http-equiv="refresh" />
-    
-    
-    
-</head>
-<body id="top">
-<main>
-    <center>
-        <h1 id="title" class=".centered-div">Checking you are not a bot</h1>
-    </center>
-
-    <div class="centered-div">
-        <img
-                id="image"
-                style="width:100%;max-width:256px;"
-                src="/.well-known/.git.gammaspectra.live/git/go-away/cmd/go-away/assets/static/logo.png?cacheBust=ZoAb7RPdpFIHlG9X7b8WwA"
-        />
-        
-        <p id="status">Loading challenge <em>meta-refresh</em>...</p>
-        
-        <details>
-            <summary>Why am I seeing this?</summary>
-
-            
-<p>
-	You are seeing this because the administrator of this website has set up <a href="https://git.gammaspectra.live/git/go-away">go-away</a> 
-	to protect the server against the scourge of <a href="https://thelibre.news/foss-infrastructure-is-under-attack-by-ai-companies/">AI companies aggressively scraping websites</a>.
-</p>
-<p>
-	Mass scraping can and does cause downtime for the websites, which makes their resources inaccessible for everyone.
-</p>
-<p>
-	Please note that some challenges requires the use of modern JavaScript features and some plugins may disable these.
-	Disable such plugins for this domain (for example, JShelter) if you encounter any issues.
-</p>
-
-        </details>
-
-        
-
-        
-
-        <p><small>If you have any issues contact the site administrator and provide the following Request Id: <em>b9d42116ff1c17c335d59818c92bef4b</em></small></p>
-    </div>
+#!/bin/sh
+# SPDX-FileCopyrightText: 2021 Sotiris Papatheodorou
+# SPDX-License-Identifier: CC0-1.0
+# Usage: kindle4_usb_networking.sh KINDLE_ROOT_DIR
+set -eu
 
 
-    <footer>
-        <center>
-            <p>
-                Protected by <a href="https://git.gammaspectra.live/git/go-away">go-away</a> :: Request Id <em>b9d42116ff1c17c335d59818c92bef4b</em>
+if [ "$#" -ne 1 ] || [ ! -d "$1" ]; then
+	printf 'Usage: %s KINDLE_ROOT_DIR\n' "$(basename "$0")"
+	exit 2
+fi
 
-                
-            </p>
-        </center>
-    </footer>
+# Read the public SSH key that will be used to connect to the kindle
+ssh_public_key_file="$HOME"/.ssh/kindle.key.pub
+if [ -r "$ssh_public_key_file" ]; then
+	ssh_public_key=$(cat "$ssh_public_key_file")
+else
+	printf 'Error: Could not read the public SSH key from %s\n' "$ssh_public_key_file"
+	exit 1
+fi
 
+# Extract the USB networking ZIP file
+script_dir=$(dirname "$(readlink -f "$0")")
+archive_dir="$script_dir/../archives"
+unzip_dir=${TMPDIR:-/tmp}/kindle4_unzip
+mkdir -p "$unzip_dir"
+unzip -d "$unzip_dir" "$archive_dir/kindle-usbnetwork-0.57.N-k4.zip" > /dev/null
 
-    
-</main>
-</body>
-</html>
+# Copy the USB networking installer to the Kindle
+kindle_dir="$1"
+cp "$unzip_dir/Update_usbnetwork_0.57.N_k4_install.bin" "$kindle_dir/"
+
+printf 'USB networking installer copied into\n    %s\n' "$kindle_dir"
+printf '* Unmount and disconnect the Kindle but DO NOT RESTART IT.\n'
+printf '* Install USB networking using\n'
+printf '      ≡ Button -> Settings -> ≡ Button -> Update Your Kindle\n'
+printf '* Once the installation is finished and the Kindle is back\n'
+printf '  in the main menu, connect it and mount it again.\n'
+while true; do
+	printf '* Type "done" once the Kindle is remounted on %s\n' "$kindle_dir"
+	read -r input
+	if [ "$input" = "done" ] && [ -d "$kindle_dir" ]; then
+		break
+	fi
+done
+
+printf '%s\n' "$ssh_public_key" > "$kindle_dir/usbnet/etc/authorized_keys"
+
+printf '* Unmount and disconnect the Kindle.\n'
+printf '* To enable USB networking, open the keyboard (⌨ Button) and enter\n'
+printf '      ;debugOn\n'
+printf '      ~usbNetwork\n'
+printf '* Connect the Kindle. It will now appear as a\n'
+printf '      Netchip Technology, Inc. Linux-USB Ethernet/RNDIS Gadget\n'
+printf '  in lsusb output.\n'
+printf '* Network Manager will try and fail to connect. Edit the connection \n'
+printf '  IPv4 Settings, set Method to Manual and add an \n'
+printf '  Address/Netmask/Gateway with values 192.168.15.201/24/192.168.15.201.\n'
+printf '* Once the connection succeeds you can SSH into the Kindle using\n'
+printf '      ssh -i ~/.ssh/kindle.key root@192.168.15.244\n'
+printf '  or with the following command and any password\n'
+printf '      ssh root@192.168.15.244\n'
+printf '* To disable USB networking, open the keyboard (⌨ Button) and enter\n'
+printf '      ~usbNetwork\n'
+printf '      ;debugOff\n'
+printf '  You might want to postpone this until the end of the setup.\n.'
+
+# Clean up
+rm -rf "$unzip_dir"
+
