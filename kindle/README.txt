@@ -1,3 +1,7 @@
+* First
+  https://git.sr.ht/~sotirisp/kindle-hacks
+  https://wiki.mobileread.com/wiki/Kindle4NTHacking
+
 * Go and Kindle 3
   https://github.com/jim/kindleland
 
