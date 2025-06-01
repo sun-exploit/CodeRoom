@@ -26,3 +26,6 @@
 
 * HomeAssistant
   https://github.com/sibbl/hass-lovelace-kindle-4/tree/main
+
+* Deeper
+  https://www.sixfoisneuf.fr/posts/kindle-hacking-deeper-dive-internals/
