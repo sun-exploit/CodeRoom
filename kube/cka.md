@@ -324,8 +324,6 @@ kubectl describe svc web-service | grep Selector
 kubectl edit svc web-service
 kubectl get endpoints web-service
 
-
-
 ## RBAC
 
 Role - quoi ?
@@ -342,6 +340,55 @@ ClusterRoleBinding - partout ?
   → attribue un ClusterRole dans tout le cluster
 
 kubectl auth can-i <verb> <resource> --as=<user> -n <namespace>
+
+## Secret
+
+kubectl get secrets
+
+kubectl create secret generic super-secret --from-literal=password=bob  --from-literal=credential=alice
+
+vi secret.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-secrets-via-file
+spec:
+  containers:
+  - name: pod-secrets-via-file
+    image: redis
+    volumeMounts:
+    - name: super-secret
+      mountPath: /secrets
+      readOnly: true
+  volumes:
+  - name: super-secret
+    secret:
+      secretName: super-secret
+
+vi pod-secrets-via-env.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-secrets-via-env
+spec:
+  containers:
+  - name: redis
+    image: redis
+    env:
+      - name: SECRET_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: super-secret
+            key: username
+      - name: SECRET_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: super-secret
+            key: password
+  restartPolicy: Never
+
 
 ## Helm and Kustomize for installing or updating components
 
@@ -703,6 +750,194 @@ kubectl get pod volume-pod -o yaml > pod.yaml
 
 kubectl replace --force -f pod.yaml
 kubectl get pods
+
+## PV - PVC - POD
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: app-data
+spec:
+  capacity:
+    storage: 2Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: slow
+  hostPath:
+    path: /srv/app-data
+
+
+https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+
+https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/#create-a-persistentvolumeclaim
+
+vi pvc.yaml
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-volume
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem  
+  resources:
+    requests:
+      storage: 10Mi
+  storageClassName: csi-hostpath-sc
+
+
+vi pod-pvc.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-server
+spec:
+  containers:
+    - name: web-server
+      image: nginx
+      volumeMounts:
+      - mountPath: "/usr/share/nginx/html"
+        name: my-volume
+  volumes:
+    - name: my-volume
+      persistentVolumeClaim:
+        claimName: pv-volume
+
+
+kubectl create –f pod-pvc.yaml
+
+kubectl edit pvc pv-volume --record
+
+## Deployment
+
+### Create deployment of nginx-app
+kubectl run nginx -app --image=nginx: 1.11 . 0 -alpine - record
+### Modify the image, nginx - app is the name of the container
+kubectl set image deployment nginx -app nginx-app=nginx: 1.11.3 - alipne
+### Rollback
+kubectl rollout undo deployment nginx -app
+Reference: https://kubernetes.io/docs/reference/kubectl/cheatsheet/
+
+## Pod - NodeSelector
+
+Schedule a pod as follows:
+•	name: nginx-kusc00401
+•	Image: nginx
+•	Node selector: disk-spinning
+
+https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+
+#yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-kusc00401
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+  nodeSelector:
+    disk: spinning
+
+kubectl create -f node-select.yaml
+
+## Ingress
+
+https://kubernetes.io/docs/concepts/services-networking/ingress/
+
+vi ingress.yaml
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ping
+  namespace: ing-internal
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /hi
+        pathType: Prefix
+        backend:
+          service:
+            name: hi
+            port:
+              number: 5678
+kubectl create –f ingress.yaml
+
+## Network Policy
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-port-from-namespace
+  namespace: internal
+spec:
+  podSelector: {}
+  ingress:
+  - {}
+  policyTypes:
+  - Ingress
+  - from:
+    - podSelector: {}
+    ports:
+    - port: 8080
+      protocol: TCP
+
+kubectl create -f network.yaml
+
+## Deployement - Port - Service
+
+kubectl get deployment
+
+kubctl edit deployment front-end
+
+spec:
+      containers:
+       - image: nginx:1.14.2
+        imagePullPolicy: IfNotPresent
+        name: nginx
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+
+
+kubectl expose deployment front-end –name=front-end-svc –port=80 –target-port=80 –type=NodePort
+
+## Deployement scale
+
+kubectl get deployments 
+
+kubectl scale deployment deployment.apps/presentation –replicas=6
+
+## Sidecar container
+
+aptVerston: v1
+kind: Pod
+netadata:
+name: big-corp-app
+spec:
+  contatners:
+  - nane: count-log
+    image: busybox
+    args: [/bin/sh, -c, 'tail -n+1 -f /var/log/big-corp-app.log']
+    volumeMounts:
+      name: varlog
+      nountPath: /var/log
+   volumes:
+   - nane: varlog
+     emptyDtr: {}
+
+$ kubectl config use-context k8s
+$ kubectl get po big-corp-app -o yaml > big-corp-app.yaml
+$ kubectl delete po big-corp-app
+$ kubectl apply -f big-corp-app.yaml
 
 ## Speed
 
